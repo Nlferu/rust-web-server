@@ -21,44 +21,36 @@ fn main() {
         let mut buffer = [0; 1024];
         stream.read(&mut buffer).unwrap();
 
+        // 'from_utf8_lossy' -> converts a slice of bytes to a string including invalid characters
+        // println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+
+        // Handling 'Response'
+        // Response structure:
+        // HTTP-Version Status-Code Reason-Phrase CRLS
+        // Headers CRLF
+        // message-body
+        //
+        // ex: HTTP/1.1 200 OK\r\n\r\n
+
         // Adding 'b' at start turning string into bytes
         let get = b"GET / HTTP/1.1\r\n";
 
-        if buffer.starts_with(get) {
-            let contents = fs::read_to_string("index.html").unwrap();
-
-            // 'from_utf8_lossy' -> converts a slice of bytes to a string including invalid characters
-            // println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
-
-            // Handling 'Response'
-            // Response structure:
-            // HTTP-Version Status-Code Reason-Phrase CRLS
-            // Headers CRLF
-            // message-body
-            //
-            // ex: HTTP/1.1 200 OK\r\n\r\n
-
-            let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n{}",
-                contents.len(),
-                contents
-            );
-
-            stream.write(response.as_bytes()).unwrap();
-            stream.flush().unwrap();
+        let (status_line, filename) = if buffer.starts_with(get) {
+            ("HTTP/1.1 200 OK", "index.html")
         } else {
-            let status_line = "HTTP/1.1 404 NOT FOUND";
-            let contents = fs::read_to_string("404.html").unwrap();
+            ("HTTP/1.1 404 NOT FOUND", "404.html")
+        };
 
-            let response = format!(
-                "{}\r\nContent-Length: {}\r\n\r\n{}",
-                status_line,
-                contents.len(),
-                contents
-            );
+        let contents = fs::read_to_string(filename).unwrap();
 
-            stream.write(response.as_bytes()).unwrap();
-            stream.flush().unwrap();
-        }
+        let response = format!(
+            "{}\r\nContent-Length: {}\r\n\r\n{}",
+            status_line,
+            contents.len(),
+            contents
+        );
+
+        stream.write(response.as_bytes()).unwrap();
+        stream.flush().unwrap();
     }
 }
