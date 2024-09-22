@@ -1,4 +1,5 @@
 extern crate rust_web_server;
+
 #[allow(unused_imports)]
 use rust_web_server::single_thread_server;
 
@@ -18,7 +19,7 @@ fn main() {
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        println!("Connection established!");
+        println!("Connection established to multi thread server!");
 
         pool.execute(|| {
             handle_connection(stream);
@@ -53,4 +54,6 @@ fn main() {
         stream.write(response.as_bytes()).unwrap();
         stream.flush().unwrap();
     }
+
+    // single_thread_server::single_thread_server();
 }
