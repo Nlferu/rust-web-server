@@ -12,7 +12,7 @@ pub fn single_thread_server() {
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
-        println!("Connection established!");
+        println!("Connection established to single thread server!");
 
         handle_connection(stream);
     }
