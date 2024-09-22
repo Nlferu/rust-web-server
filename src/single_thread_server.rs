@@ -4,7 +4,7 @@ use std::net::TcpListener;
 use std::net::TcpStream;
 
 #[allow(dead_code)]
-fn single_thread_server() {
+pub fn single_thread_server() {
     // 127.0.0.1:7878 is localhost -> check in browser
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
 
