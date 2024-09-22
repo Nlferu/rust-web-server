@@ -1,3 +1,3 @@
 # Web Server
 
-Basic web single thread server built in rust
+Basic web multi thread server built in rust
