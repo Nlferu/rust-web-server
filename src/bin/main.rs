@@ -16,7 +16,8 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
     let pool = ThreadPool::new(4);
 
-    for stream in listener.incoming().take(2) {
+    // We can add 'take(2)' -> listener.incoming().take(2) to shut down server after 2 workers got job
+    for stream in listener.incoming() {
         let stream = stream.unwrap();
 
         println!("Connection established to multi thread server!");
@@ -24,6 +25,8 @@ fn main() {
         pool.execute(|| {
             handle_connection(stream);
         });
+
+        println!("Shutting down...")
     }
 
     fn handle_connection(mut stream: TcpStream) {
